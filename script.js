@@ -1,140 +1,106 @@
-const cityInput = document.querySelector('.city-input');
-const searchBtn = document.querySelector('.search-btn');
+const API_KEY = "db40e3ff37458e68a6f77baa881c106c";
 
-const weatherInfoSection = document.querySelector('.weather-info')
-const notFoundSection = document.querySelector('.not-found')
-const weatherCitySection = document.querySelector('.search-city')
+const cityInput = document.getElementById("cityInput");
+const searchBtn = document.getElementById("searchBtn");
+const locationBtn = document.getElementById("locationBtn");
+const weatherBox = document.getElementById("weatherBox");
+const forecastBox = document.getElementById("forecast");
+const errorTxt = document.getElementById("error");
+const tipBox = document.getElementById("tipBox");
 
-const countryTxt = document.querySelector('.country-txt')
-const tempTxt = document.querySelector('.temp-txt')
-const conditionTxt = document.querySelector('.condition-txt')
-const humidityValueTxt = document.querySelector('.humidity-value-txt')
-const windValueTxt = document.querySelector('.wind-value-txt')
-const weatherSummaryImg = document.querySelector('.weather-summary-img')
-const currentDateTxt = document.querySelector('.current-date-txt')
+const themeToggle = document.getElementById("themeToggle");
 
-const forecastItemsContainer = document.querySelector('.forecast-items-container')
+/* DARK MODE */
+themeToggle.onclick = () => {
+  document.body.classList.toggle("dark");
+};
 
-const apiKey = '992a8d013c0856b51f2ffc5f17b54800'
+/* SEARCH */
+searchBtn.onclick = () => {
+  if (cityInput.value) getWeatherByCity(cityInput.value);
+};
 
-searchBtn.addEventListener('click', () => {
-    if(cityInput.value.trim() != '') {
-       updateWeatherInfo(cityInput.value)
-        cityInput.value = ''
-        cityInput.blur()
-    }
-})
-cityInput.addEventListener('keydown', (event) => {
-    if (event.key == 'Enter' && 
-        cityInput.value.trim() != ''
-    ){
-      updateWeatherInfo(cityInput.value)
-        cityInput.value = ''
-        cityInput.blur()  
-    }
-})
+/* LOCATION */
+locationBtn.onclick = () => {
+  navigator.geolocation.getCurrentPosition(pos => {
+    getWeatherByCoords(pos.coords.latitude, pos.coords.longitude);
+  });
+};
 
- async function getFetchData(endPoint, city) {
-    const apiUrl = 'https://api.openweathermap.org/data/2.5/${endPoint}?q=${city}&appid=${apiKey}&units=metric'
-
-    const response = await fetch(apiUrl)
-
-    return response.json()
+async function getWeatherByCity(city) {
+  fetchWeather(`weather?q=${city}`);
 }
 
-function getWeatherIcon(id) {
-    if (id <= 232) return 'thunderstorm.svg'
-    if (id <= 321) return 'drizzle.svg'
-    if (id <= 531) return 'rain.svg'
-    if (id <= 622) return 'snow.svg'
-    if (id <= 781) return 'atmosphere.svg'
-    if (id <= 800) return 'clear.svg'
-    else return 'clouds.svg'
+async function getWeatherByCoords(lat, lon) {
+  fetchWeather(`weather?lat=${lat}&lon=${lon}`);
 }
 
-function getCurrentDate() {
-    const currentDate = new Date()
-    const options = {
-        weekday: 'short', 
-        day: '2-digit', 
-        month: 'short' 
-    }
+async function fetchWeather(query) {
+  errorTxt.textContent = "";
+  const res = await fetch(
+    `https://api.openweathermap.org/data/2.5/${query}&units=metric&appid=${API_KEY}`
+  );
+  const data = await res.json();
 
-    return currentDate.toLocaleDateString('en-GB', options)
+  if (data.cod !== 200) {
+    errorTxt.textContent = "City not found ❌";
+    return;
+  }
+
+  showWeather(data);
+  fetchForecast(data.coord.lat, data.coord.lon);
 }
 
-async function updateWeatherInfo(city) {
-    const weatherData = await getFetchData('weather', city)
+function showWeather(data) {
+  weatherBox.classList.remove("hidden");
 
-    if (weatherData.cod != 200) {
-        showDisplaySection(notFoundSection)
-        return
-    }
-    console.log(weatherData)
-    const {
-        name: country,
-        main: { temp, humidity },
-        weather: [{ id, main}],
-        wind: { speed }
-    } = weatherData
+  document.getElementById("cityName").textContent = data.name;
+  document.getElementById("temp").textContent = Math.round(data.main.temp) + "°C";
+  document.getElementById("condition").textContent =
+    getEmoji(data.weather[0].main) + " " + data.weather[0].main;
+  document.getElementById("humidity").textContent = data.main.humidity + "%";
+  document.getElementById("wind").textContent = data.wind.speed + " m/s";
 
-    countryTxt.textContent = country
-    tempTxt.textContent = Math.round(temp) + '°C'
-    conditionTxt.textContent = main
-    humidityValueTxt.textContent = humidity + '%'
-    windValueTxt.textContent = speed + ' M/s'
-
-    currentDateTxt.textContent = getCurrentDate()
-    weatherSummaryImg.src = 'assets/weather/${getWeatherIcon(id)}'
-
-    await updateForcastsInfo(city)
-    showDisplaySection(weatherInfoSection)
-} 
-
-async function updateForcastsInfo(city) {
-    const forcastsData = await getFetchData('forecast', city)
-
-    const timeTaken = '12:00:00'
-    const todayDate = new Date().toISOString().split('T')[0]
-
-    forecastItemsContainer.innerHTML = ''
-    forcastsData.list.forEach(forcastWeather => {
-            if (forcastWeather.dt_txt.includes(timeTaken) &&
-                !forcastWeather.dt_txt.includes(todayDate)) { 
-                updateForecastItems(forcastWeather)
-            }
-    })
+  showTip(data.weather[0].main);
 }
 
-function updateForecastItems(weatherData) {
-    console.log(weatherData)
-    const {
-        dt_txt: date,
-        weather: [{ id }],
-        main: { temp }
-    } = weatherData
+/* FORECAST (7 DAYS STYLE) */
+async function fetchForecast(lat, lon) {
+  const res = await fetch(
+    `https://api.openweathermap.org/data/2.5/forecast?lat=${lat}&lon=${lon}&units=metric&appid=${API_KEY}`
+  );
+  const data = await res.json();
 
-    const dateTaken = new Date(date)
-    const dateOption = {
-        day: '2-digit',
-        month: 'short'
-    }
-    const dateResult = dateTaken.toLocaleDateString('en-US', dateOption) 
+  forecastBox.innerHTML = "";
+  forecastBox.classList.remove("hidden");
 
-    const forecastItem = `
-        <div class="forecast-item">
-            <h5 class="forecast-item-date regular-txt">${dateResult}</h5>
-            <img src="assets/weather/${getWeatherIcon(id)}" class="forecast-item-img">
-            <h5 class="forecast-item-temp">${Math.round(temp)} °C</h5>
-        </div>
-    `
-
-    forecastItemsContainer.insertAdjacentHTML('beforeend', forecastItem)
+  data.list.filter(i => i.dt_txt.includes("12:00")).slice(0,7).forEach(day => {
+    forecastBox.innerHTML += `
+      <div>
+        <strong>${new Date(day.dt_txt).toDateString().slice(0,3)}</strong><br>
+        ${getEmoji(day.weather[0].main)}<br>
+        ${Math.round(day.main.temp)}°C
+      </div>`;
+  });
 }
 
-function showDisplaySection(section) {
-    [weatherInfoSection, searchCitySection, notFoundSection]
-        .forEach(section => section.style.display = 'none')
+/* EMOJI */
+function getEmoji(type) {
+  if (type === "Rain") return "🌧";
+  if (type === "Clouds") return "☁️";
+  if (type === "Clear") return "☀️";
+  if (type === "Snow") return "❄️";
+  return "🌫";
+}
 
-    section.style.display = 'flex'
+/* FUN TIP */
+function showTip(type) {
+  tipBox.classList.remove("hidden");
+
+  if (type === "Rain")
+    tipBox.textContent = "☔ Looks rainy! Don’t forget your umbrella!";
+  else if (type === "Clear")
+    tipBox.textContent = "😎 Sunny day! Wear sunglasses!";
+  else
+    tipBox.textContent = "🌤 Weather looks calm today!";
 }
