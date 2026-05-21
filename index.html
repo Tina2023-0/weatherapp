@@ -1,56 +1,113 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Weatherly</title>
-
-  <link rel="stylesheet" href="style.css" />
-  <script src="script.js" defer></script>
-
-  <!-- Google Icons -->
-  <link rel="stylesheet"
-    href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" />
+  <title>WeatherWise</title>
+  <link rel="stylesheet" href="style.css">
 </head>
+<body class="sunny">
 
-<body>
-  <div class="app">
+<div id="startPage" class="start-page">
+  <div class="glass-box">
+<div class="weather-logo">
+☁️
+</div>
+<h1>Weather<span>Wise</span></h1>
+<p>
+Plan your day with real-time
+weather insights
+</p>
+<div class="start-search">
+<input
+type="text"
+id="startCityInput"
+placeholder="Enter city name...">
+</div>
+<button onclick="startSearch()">
+Search 🔍
+</button>
+<div class="divider">
+<hr>
+<span>or</span>
+<hr>
+</div>
+<button onclick="startLocation()">
+📍 Use My Location
+</button>
+</div>
+</div>
 
-    <!-- HEADER -->
-    <header class="top-bar">
-      <h2>🌤 Weatherly</h2>
-      <button id="themeToggle" class="icon-btn">
-        <span class="material-symbols-outlined">dark_mode</span>
-      </button>
-    </header>
+<div class="weather-bg">
+    <div class="rain"></div>
+    <div class="cloud cloud1"></div>
+    <div class="cloud cloud2"></div>
+    <div class="moon"></div>
+    <div class="stars"></div>
+  </div>
 
-    <!-- SEARCH -->
-    <div class="search-area">
-      <input type="text" id="cityInput" placeholder="Enter city name..." />
-      <button id="searchBtn">Search</button>
-      <button id="locationBtn" class="outline">📍 Current Location</button>
+<div class="app">
+  <header>
+    <h1>WeatherWise</h1>
+    <p>Plan your day with real-time weather insights</p>
+    <button id="themeBtn" onclick="toggleTheme()">🌙 Dark Mode</button>
+    <button id="voiceBtn" onclick="toggleVoice()">🔇 Voice OFF</button>
+  </header>
+
+  <div class="search-box">
+    <input type="text" id="cityInput" placeholder="Enter city name">
+    <button onclick="getWeather()">Search</button>
+    <button onclick="useLocation()">📍 Use My Location</button>
+    <button onclick="startVoiceSearch()">🎤 Speak</button>
+  </div>
+
+  <div class="dashboard">
+
+    <div class="weather-card main-card">
+      <img id="weatherIcon" src="" alt="weather icon">
+      <h2 id="cityName">City Name</h2>
+      <h1 id="temperature">--°C</h1>
+      <p id="condition">Weather Condition</p>
+      <p id="advice">Weather advice will appear here</p>
     </div>
 
-    <!-- ANIMATION MESSAGE -->
-    <div id="tipBox" class="tip hidden"></div>
+    <div class="weather-card">
+      <h3>Today Details</h3>
+      <p>Feels Like: <span id="feels">--</span></p>
+      <p>Humidity: <span id="humidity">--</span></p>
+      <p>Wind Speed: <span id="wind">--</span></p>
+      <p>Air Quality: <span id="aqi">--</span></p>
+    </div>
 
-    <!-- WEATHER -->
-    <section id="weatherBox" class="weather hidden">
-      <h1 id="cityName"></h1>
-      <h2 id="temp"></h2>
-      <p id="condition"></p>
+    <div class="weather-card">
+      <h3>Sunrise & Sunset</h3>
+      <p>🌅 Sunrise: <span id="sunrise">--</span></p>
+      <p>🌇 Sunset: <span id="sunset">--</span></p>
+    </div>
 
-      <div class="details">
-        <div>💧 Humidity<br><strong id="humidity"></strong></div>
-        <div>🌬 Wind<br><strong id="wind"></strong></div>
-      </div>
-    </section>
+    <div class="weather-card">
+      <h3>Hourly Forecast</h3>
+      <div class="forecast" id="hourlyForecast"></div>
+    </div>
 
-    <!-- FORECAST -->
-    <section id="forecast" class="forecast hidden"></section>
-
-    <p id="error" class="error"></p>
+    <div class="weather-card wide-card">
+      <h3>5-Day Forecast</h3>
+      <div class="week" id="weeklyForecast"></div>
+    </div>
 
   </div>
+  </div>
+
+  <div id="startPage" class="start-page">
+  <div class="start-content">
+    <h1>WeatherWise</h1>
+    <p>Plan your day with real-time weather insights</p>
+
+    <input type="text" id="startCityInput" placeholder="Enter city name">
+
+    <button onclick="startSearch()">Search</button>
+    <button onclick="startLocation()">📍 Use My Location</button>
+  </div>
+</div>
+
+<script src="script.js"></script>
 </body>
 </html>
