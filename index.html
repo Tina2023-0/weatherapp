@@ -1,110 +1,136 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>WeatherWise</title>
+
+  <script src="https://cdn.tailwindcss.com"></script>
   <link rel="stylesheet" href="style.css">
 </head>
-<body class="sunny">
 
-<div id="startPage" class="start-page">
-  <div class="glass-box">
-<div class="weather-logo">
-☁️
-</div>
-<h1>Weather<span>Wise</span></h1>
-<p>
-Plan your day with real-time
-weather insights
-</p>
-<div class="start-search">
-<input
-type="text"
-id="startCityInput"
-placeholder="Enter city name...">
-</div>
-<button onclick="startSearch()">
-Search 🔍
-</button>
-<div class="divider">
-<hr>
-<span>or</span>
-<hr>
-</div>
-<button onclick="startLocation()">
-📍 Use My Location
-</button>
-</div>
-</div>
+<body class="sunny min-h-screen text-white font-sans transition-all duration-500">
 
 <div class="weather-bg">
+
     <div class="rain"></div>
+
+    <div class="lightning"></div>
+
     <div class="cloud cloud1"></div>
     <div class="cloud cloud2"></div>
-    <div class="moon"></div>
-    <div class="stars"></div>
-  </div>
 
-<div class="app">
-  <header>
-    <h1>WeatherWise</h1>
-    <p>Plan your day with real-time weather insights</p>
-    <button id="themeBtn" onclick="toggleTheme()">🌙 Dark Mode</button>
-    <button id="voiceBtn" onclick="toggleVoice()">🔇 Voice OFF</button>
+    <div class="moon"></div>
+
+    <div class="stars"></div>
+
+</div>
+
+<div id="startPage" class="fixed inset-0 z-50 flex items-center justify-center px-5 bg-gradient-to-br from-slate-950 via-blue-950 to-slate-900">
+
+  <div class="relative w-full max-w-md bg-white/10 backdrop-blur-2xl rounded-[35px] p-8 shadow-2xl border border-white/20 text-center">
+
+    <div class="text-7xl mb-4">⛅</div>
+
+    <h1 class="text-5xl font-bold mb-3">
+      Weather<span class="text-blue-400">Wise</span>
+    </h1>
+
+    <p class="text-white/80 mb-7">
+      Search your city and get real-time weather updates
+    </p>
+
+    <input
+      type="text"
+      id="startCityInput"
+      placeholder="Enter city name"
+      class="w-full px-5 py-4 rounded-full text-black outline-none mb-4 shadow-lg"
+    >
+
+    <button
+      onclick="startSearch()"
+      class="w-full py-4 rounded-full bg-blue-600 hover:bg-blue-700 transition font-bold shadow-lg mb-3"
+    >
+      Search Weather 🔍
+    </button>
+
+    <button
+      onclick="startLocation()"
+      class="w-full py-4 rounded-full bg-white/20 hover:bg-white/30 transition font-bold"
+    >
+      📍 Use My Location
+    </button>
+
+  </div>
+</div>
+
+<div class="relative z-10 w-[90%] max-w-[1100px] mx-auto py-8">
+
+  <header class="text-center mb-7">
+    <h1 id="appTitle" class="text-4xl md:text-5xl font-bold drop-shadow-lg">WeatherWise</h1>
+    <p id="tagline" class="mt-3 text-lg">Plan your day with real-time weather insights</p>
+
+    <div class="flex justify-center flex-wrap gap-3 mt-5">
+      <select id="languageSelect" onchange="changeLanguage()" class="custom-select">
+        <option value="en">🌐 English</option>
+        <option value="hi">🌐 हिन्दी</option>
+        <option value="as">🌐 অসমীয়া</option>
+      </select>
+
+      <button id="themeBtn" onclick="toggleTheme()" class="btn">🌙 Dark Mode</button>
+      <button id="voiceBtn" onclick="toggleVoice()" class="btn">🔇 Voice OFF</button>
+    </div>
   </header>
 
-  <div class="search-box">
-    <input type="text" id="cityInput" placeholder="Enter city name">
-    <button onclick="getWeather()">Search</button>
-    <button onclick="useLocation()">📍 Use My Location</button>
-    <button onclick="startVoiceSearch()">🎤 Speak</button>
+  <div class="flex flex-col md:flex-row gap-3 bg-white rounded-[30px] p-3 mb-7 shadow-xl">
+    <input type="text" id="cityInput" placeholder="Enter city name"
+      class="flex-1 px-4 py-3 rounded-full text-black outline-none">
+
+    <button id="searchBtn" onclick="getWeather()" class="btn">Search</button>
+    <button id="locationBtn" onclick="useLocation()" class="btn">📍 Use My Location</button>
+    <button onclick="startVoiceSearch()" class="btn">🎤 Speak</button>
   </div>
 
-  <div class="dashboard">
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
 
-    <div class="weather-card main-card">
-      <img id="weatherIcon" src="" alt="weather icon">
-      <h2 id="cityName">City Name</h2>
-      <h1 id="temperature">--°C</h1>
-      <p id="condition">Weather Condition</p>
-      <p id="advice">Weather advice will appear here</p>
+    <div class="weather-card text-center">
+      <img id="weatherIcon" src="" alt="weather icon" class="w-[90px] mx-auto floating-icon">
+      <h2 id="cityName" class="text-2xl font-bold mt-3">City Name</h2>
+      <h1 id="temperature" class="text-6xl font-bold my-3">--°C</h1>
+      <p id="condition" class="text-lg">Weather Condition</p>
+      <p id="advice" class="mt-3 text-sm">Weather advice will appear here</p>
     </div>
 
     <div class="weather-card">
-      <h3>Today Details</h3>
-      <p>Feels Like: <span id="feels">--</span></p>
-      <p>Humidity: <span id="humidity">--</span></p>
-      <p>Wind Speed: <span id="wind">--</span></p>
-      <p>Air Quality: <span id="aqi">--</span></p>
+      <h3 id="todayDetails" class="text-2xl font-bold mb-4">Today Details</h3>
+
+      <p class="detail"><span id="feelsText">Feels Like:</span> <span id="feels">--</span></p>
+      <p class="detail"><span id="humidityText">Humidity:</span> <span id="humidity">--</span></p>
+      <p class="detail"><span id="windText">Wind Speed:</span> <span id="wind">--</span></p>
+      <p class="detail"><span id="aqiText">Air Quality:</span> <span id="aqi">--</span></p>
+    </div>
+
+    <div class="weather-card alert-card">
+      <h3 class="text-2xl font-bold mb-3">🚨 Disaster Alert</h3>
+      <p id="disasterAlert">No disaster alert currently.</p>
     </div>
 
     <div class="weather-card">
-      <h3>Sunrise & Sunset</h3>
-      <p>🌅 Sunrise: <span id="sunrise">--</span></p>
-      <p>🌇 Sunset: <span id="sunset">--</span></p>
+      <h3 id="sunText" class="text-2xl font-bold mb-4">Sunrise & Sunset</h3>
+      <p class="detail">🌅 Sunrise: <span id="sunrise">--</span></p>
+      <p class="detail">🌇 Sunset: <span id="sunset">--</span></p>
     </div>
 
     <div class="weather-card">
-      <h3>Hourly Forecast</h3>
+      <h3 id="hourlyText" class="text-2xl font-bold mb-4">Hourly Forecast</h3>
       <div class="forecast" id="hourlyForecast"></div>
     </div>
 
-    <div class="weather-card wide-card">
-      <h3>5-Day Forecast</h3>
+    <div class="weather-card md:col-span-2">
+      <h3 id="forecastText" class="text-2xl font-bold mb-4">5-Day Forecast</h3>
       <div class="week" id="weeklyForecast"></div>
     </div>
 
-  </div>
-  </div>
-
-  <div id="startPage" class="start-page">
-  <div class="start-content">
-    <h1>WeatherWise</h1>
-    <p>Plan your day with real-time weather insights</p>
-
-    <input type="text" id="startCityInput" placeholder="Enter city name">
-
-    <button onclick="startSearch()">Search</button>
-    <button onclick="startLocation()">📍 Use My Location</button>
   </div>
 </div>
 
