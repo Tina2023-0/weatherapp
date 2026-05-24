@@ -1,10 +1,69 @@
 const apiKey = "992a8d013c0856b51f2ffc5f17b54800";
 
+let currentLang = "en";
+let voiceOn = false;
+
+const translations = {
+  en: {
+    title: "WeatherWise",
+    tagline: "Plan your day with real-time weather insights",
+    placeholder: "Enter city name",
+    search: "Search",
+    location: "📍 Use My Location",
+    today: "Today Details",
+    feels: "Feels Like:",
+    humidity: "Humidity:",
+    wind: "Wind Speed:",
+    aqi: "Air Quality:",
+    sun: "Sunrise & Sunset",
+    hourly: "Hourly Forecast",
+    forecast: "5-Day Forecast",
+    enterCity: "Please enter city name",
+    cityNotFound: "City not found"
+  },
+
+  hi: {
+    title: "WeatherWise",
+    tagline: "रीयल-टाइम मौसम जानकारी के साथ अपना दिन प्लान करें",
+    placeholder: "शहर का नाम दर्ज करें",
+    search: "खोजें",
+    location: "📍 मेरी लोकेशन उपयोग करें",
+    today: "आज की जानकारी",
+    feels: "महसूस होता है:",
+    humidity: "नमी:",
+    wind: "हवा की गति:",
+    aqi: "वायु गुणवत्ता:",
+    sun: "सूर्योदय और सूर्यास्त",
+    hourly: "घंटेवार पूर्वानुमान",
+    forecast: "5-दिन का पूर्वानुमान",
+    enterCity: "कृपया शहर का नाम दर्ज करें",
+    cityNotFound: "शहर नहीं मिला"
+  },
+
+  as: {
+    title: "WeatherWise",
+    tagline: "ৰিয়েল-টাইম বতৰৰ তথ্যৰে আপোনাৰ দিনটো পৰিকল্পনা কৰক",
+    placeholder: "চহৰৰ নাম লিখক",
+    search: "সন্ধান কৰক",
+    location: "📍 মোৰ অৱস্থান ব্যৱহাৰ কৰক",
+    today: "আজিৰ বিৱৰণ",
+    feels: "অনুভৱ হয়:",
+    humidity: "আৰ্দ্ৰতা:",
+    wind: "বতাহৰ গতি:",
+    aqi: "বায়ুৰ মান:",
+    sun: "সূৰ্যোদয় আৰু সূৰ্যাস্ত",
+    hourly: "ঘণ্টাভিত্তিক পূৰ্বানুমান",
+    forecast: "৫-দিনৰ পূৰ্বানুমান",
+    enterCity: "অনুগ্ৰহ কৰি চহৰৰ নাম লিখক",
+    cityNotFound: "চহৰ পোৱা নগ'ল"
+  }
+};
+
 async function getWeather() {
-  let city = document.getElementById("cityInput").value;
+  let city = document.getElementById("cityInput").value.trim();
 
   if (city === "") {
-    alert("Please enter a city name");
+    alert(translations[currentLang].enterCity);
     return;
   }
 
@@ -16,7 +75,7 @@ async function getWeather() {
     const data = await response.json();
 
     if (data.cod !== 200) {
-      alert("City not found");
+      alert(translations[currentLang].cityNotFound);
       return;
     }
 
@@ -29,6 +88,26 @@ async function getWeather() {
   }
 }
 
+function changeLanguage() {
+  currentLang = document.getElementById("languageSelect").value;
+  let t = translations[currentLang];
+
+  document.getElementById("appTitle").innerText = t.title;
+  document.getElementById("tagline").innerText = t.tagline;
+  document.getElementById("cityInput").placeholder = t.placeholder;
+  document.getElementById("searchBtn").innerText = t.search;
+  document.getElementById("locationBtn").innerText = t.location;
+  document.getElementById("todayDetails").innerText = t.today;
+  document.getElementById("sunText").innerText = t.sun;
+  document.getElementById("hourlyText").innerText = t.hourly;
+  document.getElementById("forecastText").innerText = t.forecast;
+
+  document.getElementById("feelsText").innerText = t.feels;
+  document.getElementById("humidityText").innerText = t.humidity;
+  document.getElementById("windText").innerText = t.wind;
+  document.getElementById("aqiText").innerText = t.aqi;
+}
+
 function startVoiceSearch() {
   let SpeechRecognition =
     window.SpeechRecognition || window.webkitSpeechRecognition;
@@ -39,15 +118,12 @@ function startVoiceSearch() {
   }
 
   let recognition = new SpeechRecognition();
-
   recognition.lang = "en-IN";
   recognition.start();
 
   recognition.onresult = function(event) {
     let spokenCity = event.results[0][0].transcript;
-
     document.getElementById("cityInput").value = spokenCity;
-
     getWeather();
   };
 
@@ -55,8 +131,6 @@ function startVoiceSearch() {
     alert("Could not recognize your voice. Please try again.");
   };
 }
-
-let voiceOn = false;
 
 function toggleVoice() {
   voiceOn = !voiceOn;
@@ -71,77 +145,12 @@ function toggleVoice() {
   }
 }
 
-function startSearch() {
-  let city = document.getElementById("startCityInput").value;
-
-  if (city === "") {
-    alert("Please enter city name");
-    return;
-  }
-
-  document.getElementById("cityInput").value = city;
-  document.getElementById("startPage").classList.add("hidden");
-
-  getWeather();
-}
-
-function startSearch(){
-
-let city=
-document.getElementById(
-"startCityInput"
-).value;
-
-if(city===""){
-
-alert(
-"Enter city name"
-);
-
-return;
-
-}
-
-document.getElementById(
-"cityInput"
-).value=city;
-
-document.getElementById(
-"startPage"
-).style.display=
-"none";
-
-getWeather();
-
-}
-
-function startLocation(){
-
-document.getElementById("startPage").classList.add("hidden");
-
-document.getElementById(
-"cityInput"
-).value="";
-
-useLocation();
-
-}
-
-function startLocation() {
-  document.getElementById("startCityInput").value = "";
-  document.getElementById("cityInput").value = "";
-  document.getElementById("startPage").style.display = "none";
-
-  useLocation();
-}
-
 function updateCurrentWeather(data) {
   document.getElementById("cityName").innerText = data.name;
   document.getElementById("temperature").innerText =
     Math.round(data.main.temp) + "°C";
 
-  document.getElementById("condition").innerText =
-    data.weather[0].main;
+  document.getElementById("condition").innerText = data.weather[0].main;
 
   document.getElementById("feels").innerText =
     Math.round(data.main.feels_like) + "°C";
@@ -161,26 +170,17 @@ function updateCurrentWeather(data) {
   document.getElementById("sunset").innerText =
     formatTime(data.sys.sunset);
 
-  changeBackground(data.weather[0].main);
+changeBackground(
+   data.weather[0].main,
+   data.weather[0].icon
+);
+
   showAdvice(data.weather[0].main);
+  checkDisasterAlert(data);
 
   if (voiceOn) {
-  speakWeather(data);
-}
-}
-
-function speakWeather(data) {
-  let message =
-    "Weather in " + data.name +
-    " is " + data.weather[0].main +
-    " with temperature " +
-    Math.round(data.main.temp) +
-    " degree Celsius";
-
-  let speech = new SpeechSynthesisUtterance(message);
-  speech.lang = "en-IN";
-
-  window.speechSynthesis.speak(speech);
+    speakWeather(data);
+  }
 }
 
 async function getForecast(lat, lon) {
@@ -215,7 +215,7 @@ async function getForecast(lat, lon) {
 
     weekBox.innerHTML += `
       <p>
-        ${date} 
+        ${date}
         <img src="https://openweathermap.org/img/wn/${item.weather[0].icon}.png">
         ${Math.round(item.main.temp)}°C - ${item.weather[0].main}
       </p>
@@ -242,27 +242,88 @@ async function getAirQuality(lat, lon) {
   document.getElementById("aqi").innerText = aqiText;
 }
 
-function changeBackground(weather) {
-  let isDark = document.body.classList.contains("dark-mode");
+function checkDisasterAlert(data) {
+  let alertBox = document.querySelector(".alert-card");
+  let alertText = document.getElementById("disasterAlert");
 
-  document.body.className = "";
+  let weather = data.weather[0].main;
+  let temp = data.main.temp;
+  let wind = data.wind.speed;
 
-  if (weather === "Clear") {
-    document.body.classList.add("sunny");
-  } 
-  else if (weather === "Rain" || weather === "Drizzle") {
-    document.body.classList.add("rainy");
-  } 
-  else if (weather === "Clouds") {
-    document.body.classList.add("cloudy");
-  } 
-  else {
-    document.body.classList.add("night");
+  alertBox.classList.remove("alert-danger", "alert-warning", "alert-safe");
+
+  if (weather === "Thunderstorm") {
+    alertText.innerText = "Severe thunderstorm alert. Avoid outdoor activities.";
+    alertBox.classList.add("alert-danger");
+  } else if (weather === "Rain" && data.rain && data.rain["1h"] >= 20) {
+    alertText.innerText = "Heavy rainfall alert. Possible flood risk in low areas.";
+    alertBox.classList.add("alert-danger");
+  } else if (temp >= 40) {
+    alertText.innerText = "Heatwave alert. Stay indoors and drink water.";
+    alertBox.classList.add("alert-warning");
+  } else if (wind >= 15) {
+    alertText.innerText = "Strong wind warning. Be careful while travelling.";
+    alertBox.classList.add("alert-warning");
+  } else {
+    alertText.innerText = "No disaster alert currently.";
+    alertBox.classList.add("alert-safe");
   }
+}
 
-  if (isDark) {
-    document.body.classList.add("dark-mode");
-  }
+function changeBackground(weather, iconCode) {
+
+    // Save dark mode state
+    let darkEnabled =
+        document.body.classList.contains("dark-mode");
+
+    // Remove ONLY weather classes
+    document.body.classList.remove(
+        "sunny",
+        "rainy",
+        "cloudy",
+        "night"
+    );
+
+    // OpenWeather night icons end with "n"
+    let isNight = iconCode.endsWith("n");
+
+    if (isNight) {
+
+        document.body.classList.add("night");
+
+    }
+
+    else if (
+        weather === "Rain" ||
+        weather === "Drizzle" ||
+        weather === "Thunderstorm"
+    ) {
+
+        document.body.classList.add("rainy");
+
+    }
+
+    else if (
+        weather === "Clouds" ||
+        weather === "Mist" ||
+        weather === "Fog" ||
+        weather === "Haze"
+    ) {
+
+        document.body.classList.add("cloudy");
+
+    }
+
+    else {
+
+        document.body.classList.add("sunny");
+
+    }
+
+    // Restore dark mode if user enabled it
+    if (darkEnabled) {
+        document.body.classList.add("dark-mode");
+    }
 }
 
 function showAdvice(weather) {
@@ -281,6 +342,20 @@ function showAdvice(weather) {
   }
 }
 
+function speakWeather(data) {
+  let message =
+    "Weather in " + data.name +
+    " is " + data.weather[0].main +
+    " with temperature " +
+    Math.round(data.main.temp) +
+    " degree Celsius";
+
+  let speech = new SpeechSynthesisUtterance(message);
+  speech.lang = "en-IN";
+
+  window.speechSynthesis.speak(speech);
+}
+
 function toggleTheme() {
   document.body.classList.toggle("dark-mode");
 
@@ -294,8 +369,12 @@ function toggleTheme() {
 }
 
 function useLocation() {
-
   document.getElementById("cityInput").value = "";
+
+  if (!navigator.geolocation) {
+    alert("Geolocation is not supported by your browser.");
+    return;
+  }
 
   navigator.geolocation.getCurrentPosition(async function(position) {
     let lat = position.coords.latitude;
@@ -311,7 +390,6 @@ function useLocation() {
     getForecast(lat, lon);
     getAirQuality(lat, lon);
   });
-
 }
 
 function formatTime(timestamp) {
@@ -321,3 +399,38 @@ function formatTime(timestamp) {
     minute: "2-digit"
   });
 }
+
+document.getElementById("cityInput").addEventListener("keypress", function(event) {
+  if (event.key === "Enter") {
+    getWeather();
+  }
+});
+
+function openMainApp() {
+  document.getElementById("startPage").style.display = "none";
+  document.getElementById("mainApp").classList.remove("hidden");
+}
+
+function startSearch() {
+  let city = document.getElementById("startCityInput").value.trim();
+
+  if (city === "") {
+    alert("Please enter city name");
+    return;
+  }
+
+  document.getElementById("cityInput").value = city;
+  openMainApp();
+  getWeather();
+}
+
+function startLocation() {
+  openMainApp();
+  useLocation();
+}
+
+document.getElementById("startCityInput").addEventListener("keypress", function(event) {
+  if (event.key === "Enter") {
+    startSearch();
+  }
+});
