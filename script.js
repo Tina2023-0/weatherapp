@@ -330,7 +330,7 @@ function showAdvice(weather) {
   let advice = document.getElementById("advice");
 
   if (weather === "Clear") {
-    advice.innerText = "☀ Drink water and use sunscreen.";
+    advice.innerText = "The sky is clear.";
   } else if (weather === "Rain" || weather === "Drizzle") {
     advice.innerText = "🌧 Carry an umbrella today.";
   } else if (weather === "Clouds") {
@@ -420,13 +420,22 @@ function startSearch() {
   }
 
   document.getElementById("cityInput").value = city;
-  openMainApp();
-  getWeather();
+
+  document.getElementById("startPage").style.display = "none";
+  document.getElementById("mainApp").classList.remove("hidden");
+
+  setTimeout(function() {
+    getWeather();
+  }, 300);
 }
 
 function startLocation() {
-  openMainApp();
-  useLocation();
+  document.getElementById("startPage").style.display = "none";
+  document.getElementById("mainApp").classList.remove("hidden");
+
+  setTimeout(function() {
+    useLocation();
+  }, 300);
 }
 
 document.getElementById("startCityInput").addEventListener("keypress", function(event) {
